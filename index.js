@@ -5,38 +5,42 @@ const fs = require('fs');
 const moment = require('moment');
 //const request = require('snekfetch');
 
-client.commands = new Discord.Collection();
-
-fs.readdir("./commands", (err, files) => {
-    if(err) console.error(err);
-
-    /*
-        Read to the directory and makes an array for all of the files
-        Example: "test.hello.js" ["test", "hello", "js"]
-    */
-    let jsfiles = files.filter(f =>f.split(".").pop() === "js");
-    if(jsfiles.length <= 0) {
-        console.log("No commands to load!");
-        return;
-    }
-
-    console.log(`Loading ${jsfiles.length} commands!`);
-
-    jsfiles.forEach((f, i) => {
-        let props = require(`./commands/${f}`);
-            console.log(`${i + 1}: ${f} loaded!`);
-        client.commands.set(props.help.name, props);
-    });
-});
-
 // Config stuff
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
 const token = config.token;
 const prefix = config.prefix;
 
-// Event listener to check if the bot loads up
+// Event listener to check when the bot is ready
 client.on("ready", () => {
-    console.log("Suh dude!");
+    console.log(`${client.user.username} is ready to serve`);
+    client.user.setActivity("Serving");
+});
+
+client.commands = new Discord.Collection();
+// Reads the directory /commands
+fs.readdir("./commands", (err, files) => {
+    // If there is an error YOU typed the directory name wrong!
+    if(err) console.error(err);
+
+    /*
+        Looks at each file in the directory for the .js extension and puts it in an array[name, extension]
+        Example: "ping.js" ["test", "js"]
+    */
+    let jsfiles = files.filter(f =>f.split(".").pop() === "js");
+    // If there are 0 files in the directory sends a message to console
+    if(jsfiles.length <= 0) {
+        console.log("No commands to load!");
+        return;
+    }
+    // Just a message showing that the command files are loading
+    console.log(`Loading ${jsfiles.length} commands!`);
+    // Does a loop to check for every .js file in the directory
+    jsfiles.forEach((f, i) => {
+        let props = require(`./commands/${f}`);
+            // console.log(`${i + 1}: ${f} loaded!`);  Use this if you want to see each command being loaded
+        client.commands.set(props.help.name, props);
+    });
+    console.log(`${jsfiles.length} commands are loaded!`);
 });
 
 // Commands
