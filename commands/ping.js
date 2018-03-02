@@ -1,5 +1,4 @@
 const moment = module.require('moment');
-const Discord = module.require('discord.js');
 
 module.exports.run = async (client, message, args) => {
     const ping = Math.round(client.ping);
