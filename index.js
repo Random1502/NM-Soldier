@@ -3,6 +3,31 @@ const Discord = require('discord.js');
 const client = new Discord.Client;
 const fs = require('fs');
 const moment = require('moment');
+//const request = require('snekfetch');
+
+client.commands = new Discord.Collection();
+
+fs.readdir("./commands", (err, files) => {
+    if(err) console.error(err);
+
+    /*
+        Read to the directory and makes an array for all of the files
+        Example: "test.hello.js" ["test", "hello", "js"]
+    */
+    let jsfiles = files.filter(f =>f.split(".").pop() === "js");
+    if(jsfiles.length <= 0) {
+        console.log("No commands to load!");
+        return;
+    }
+
+    console.log(`Loading ${jsfiles.length} commands!`);
+
+    jsfiles.forEach((f, i) => {
+        let props = require(`./commands/${f}`);
+            console.log(`${i + 1}: ${f} loaded!`);
+        client.commands.set(props.help.name, props);
+    });
+});
 
 // Config stuff
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
@@ -18,28 +43,19 @@ client.on("ready", () => {
 client.on("message", message => {
     // Checks if message isn't written by a bot. If not then it runs
     if (message.author.bot == true) return;
+    if (message.channel.type == "DM") return;
 
     var mess = message.content;    
-    const args = message.content.slice(prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+    let messageArray = mess.split(/\s+/g);
+    let command = messageArray[0];
+    let args = messageArray.slice(1);
 
     // Checks if the message starts with the prefix
-    if(mess.startsWith(prefix)) {
+    if(!mess.startsWith(prefix)) return;
 
-        switch (command) {
-            // Diplays the latency from the bot
-            case "ping" :
-                const ping = Math.round(client.ping);
-                message.channel.send(`ping \`${ping} ms\``);
-                break;
-            // Displays the amount of people there are in the server
-            case "howmuch" :
-                message.channel.send(message.guild.memberCount);
-                break;
-            }
-    } else {
-        return message.channel.send("Use the prefix '" + prefix + "'");
-    }
+    let cmd = client.commands.get(command.slice(prefix.length).toLowerCase());
+
+    if(cmd) cmd.run(client, message, args);
 });
 
 // Create an event listener for new guild members
