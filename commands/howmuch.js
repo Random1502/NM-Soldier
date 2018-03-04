@@ -1,5 +1,5 @@
 module.exports.run = async (client, message, args) => {
-    message.channel.send(message.guild.memberCount);
+    message.channel.send("There are " +message.guild.memberCount + " members in the server");
 }
 
 module.exports.help = {
