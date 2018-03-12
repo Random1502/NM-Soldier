@@ -14,5 +14,5 @@ module.exports.run = async (client, message, args) => {
 module.exports.help = {
     name: "avatar",
     usage: "!avatar [USER MENTION OR ID]",
-    description: "Shows the link of the mentioned/your own profile picture"
+    description: "Show the user/mentioned user's avatar picture"
 }

@@ -9,5 +9,4 @@ module.exports.help = {
     name: "ping",
     usage: "!ping",
     descrition: "Returns the latency of the bot to the server"
-
 }

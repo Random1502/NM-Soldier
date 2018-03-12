@@ -3,7 +3,6 @@ const Discord = require('discord.js');
 const client = new Discord.Client;
 const fs = require('fs');
 const moment = require('moment');
-//const request = require('snekfetch');
 
 // Config stuff
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
@@ -37,7 +36,7 @@ fs.readdir("./commands", (err, files) => {
     // Does a loop to check for every .js file in the directory
     jsfiles.forEach((f, i) => {
         let props = require(`./commands/${f}`);
-            // console.log(`${i + 1}: ${f} loaded!`);  Use this if you want to see each command being loaded
+           // console.log(`${i + 1}: ${f} loaded!`);  // Use this if you want to see each command being loaded
         client.commands.set(props.help.name, props);
     });
     console.log(`${jsfiles.length} commands are loaded!`);
@@ -60,6 +59,11 @@ client.on("message", message => {
     let cmd = client.commands.get(command.slice(prefix.length).toLowerCase());
 
     if(cmd) cmd.run(client, message, args);
+
+
+    if(mess.startsWith(prefix)){
+        message.delete(2000);
+    }
 });
 
 // Create an event listener for new guild members
