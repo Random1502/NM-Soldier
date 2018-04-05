@@ -1,5 +1,7 @@
 {   "prefix":"!",
-    "token":"insert token here",
-    "twitchid":"your twitch id here",
-    "streamer":"Twitch username here"
+    "token":"Insert bot token",
+    "twitchid":"Insert twitch app client ID",
+    "streamer":"Insert streamer name",
+    "role":"Insert which role can do commands",
+    "welcome":"Insert channel name where you want the welcome message to send"
 }

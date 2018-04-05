@@ -7,19 +7,19 @@ module.exports.run = async (client, message, args) => {
     // Does a GET request for the api which is registered at the top
     snekfetch.get(api).then(r => {
         var json = r.body;
-        var live = json.stream.channel.status;
 
         // Checks if the streamer is live
         if(json.stream == null){
             // If not does nothing
             console.log('offline');
         } else {
+            var live = json.stream.channel.status;
             // Otherwise it send the title of the stream
-            message.channel.send(live);
+            message.channel.send(live + " @everyone");
         }
     });
 }
 
 module.exports.help = {
-    name: "json"
+    name: "live"
 }

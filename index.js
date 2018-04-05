@@ -8,6 +8,7 @@ const moment = require('moment');
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
 const token = config.token;
 const prefix = config.prefix;
+const welcomeChannel = config.welcome
 
 // Event listener to check when the bot is ready
 client.on("ready", () => {
@@ -44,23 +45,33 @@ fs.readdir("./commands", (err, files) => {
 
 // Commands
 client.on("message", message => {
-    // Checks if message isn't written by a bot. If not then it runs
+    /*
+       Checks before continuing the code
+    */
+    // Check if the user is not a robot
     if (message.author.bot == true) return;
+    // Check if it's not in a DM
     if (message.channel.type == "DM") return;
+    // Check if the user has the right role
+    if (!message.member.roles.has(config.role)) return;
+    // Checks if the message starts with the prefix
+    if(!mess.startsWith(prefix)) return;
 
+    // Puts the message into an aray so that it can read the command name
     var mess = message.content;    
     let messageArray = mess.split(/\s+/g);
     let command = messageArray[0];
     let args = messageArray.slice(1);
-
-    // Checks if the message starts with the prefix
-    if(!mess.startsWith(prefix)) return;
-
+    // Gets the command name and removes the prefix + put it in lowercase
     let cmd = client.commands.get(command.slice(prefix.length).toLowerCase());
 
-    if(cmd) cmd.run(client, message, args);
-
-
+    // If the command exist run it
+    if(cmd) { cmd.run(client, message, args); }
+    else { message.reply("That is not a command!").then(msg => {
+            msg.delete(10000);
+        }); 
+    }
+    // If a message starts with the command prefix it gets deleted after 2 seconds
     if(mess.startsWith(prefix)){
         message.delete(2000);
     }
@@ -69,22 +80,22 @@ client.on("message", message => {
 // Create an event listener for new guild members
 client.on('guildMemberAdd', member => {
     // Send the message to a designated channel on a server:
-    var channel = member.guild.channels.find("name","welcome");
+    var channel = member.guild.channels.find("name", welcomeChannel);
     if(!channel) {
         console.log("Channel not found!");
     } else {
-    channel.send(`Welcome ${member}`);
+    channel.send(`Welcome ${member} to ${guild}`);
     }
 });
 
 // Create an event listener for leaving guild members
 client.on('guildMemberRemove', member => {
     // Send the message to a designated channel on a server:
-    var channel = member.guild.channels.find("name","welcome");
+    var channel = member.guild.channels.find("name", welcomeChannel);
     if(!channel){
         console.log("Channel not found");
     } else {
-    channel.send(`Bye ${member}`);
+    channel.send(`Bye ${member}, we hope you enjoyed your stay`);
     }
 });
 
